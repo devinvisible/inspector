@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Windows.Data;
 
-namespace inspector
+namespace Inspector
 {
     public class DebugDummyConverter : IValueConverter
     {

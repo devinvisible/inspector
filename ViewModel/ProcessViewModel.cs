@@ -1,16 +1,23 @@
-﻿using System;
+﻿using dnlib.DotNet;
+using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 
-namespace inspector.ViewModel
+namespace Inspector.ViewModel
 {
-    public class ProcessViewModel
+    class ProcessViewModel : ViewModelBase
     {
         private Process _process;
+        public ObservableCollection<ModuleViewModel> Modules { get; }
 
         public ProcessViewModel(Process process)
         {
             _process = process;
+            
+            Modules = new ObservableCollection<ModuleViewModel>();
         }
 
         public int Id => _process.Id;
@@ -33,6 +40,23 @@ namespace inspector.ViewModel
 
                 return false;
             }
+        }
+
+        public void ShowModules()
+        {
+            if (Modules.Count == 0)
+            {
+                foreach (ProcessModule m in _process.Modules)
+                {
+                    try
+                    {
+                        ModuleDefMD module = ModuleDefMD.Load(m.FileName);
+                        Modules.Add(new ModuleViewModel(module));
+                    }
+                    catch (BadImageFormatException) { }
+                }
+            }
+            base.OnPropertyChanged(nameof(Modules));
         }
     }
 }

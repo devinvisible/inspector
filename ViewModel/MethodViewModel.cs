@@ -1,0 +1,21 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using dnlib.DotNet;
+
+namespace Inspector.ViewModel
+{
+    class MethodViewModel : ViewModelBase
+    {
+        private MethodDef _method;
+
+        public MethodViewModel(MethodDef method)
+        {
+            _method = method;
+        }
+
+        public string Name => _method.FullName;
+    }
+}

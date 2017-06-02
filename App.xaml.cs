@@ -1,13 +1,7 @@
-﻿using inspector.ViewModel;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Inspector.ViewModel;
 using System.Windows;
 
-namespace inspector
+namespace Inspector
 {
     /// <summary>
     /// Interaction logic for App.xaml

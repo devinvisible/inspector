@@ -1,43 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
-namespace inspector.ViewModel
+namespace Inspector.ViewModel
 {
     abstract class ViewModelBase : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        protected virtual void OnPropertyChanged(string propertyName)
+        protected virtual void OnPropertyChanged([CallerMemberName]string propertyName = null)
         {
-            VerifyPropertyName(propertyName);
-            PropertyChangedEventHandler handler = this.PropertyChanged;
-            if (handler != null)
-            {
-                var e = new PropertyChangedEventArgs(propertyName);
-                handler(this, e);
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private bool ThrowOnInvalidPropertyName { get => false; }
-
-        [Conditional("DEBUG")]
-        [DebuggerStepThrough]
-        public void VerifyPropertyName(string propertyName)
+        // Credits @Insire#6529
+        protected bool SetValue<T>(ref T field, T value, Action OnChanging = null, Action OnChanged = null, [CallerMemberName]string propertyName = null)
         {
-            // Verify that the property name matches a real, 
-            // public, instance property on this object. 
-            if (TypeDescriptor.GetProperties(this)[propertyName] == null)
-            {
-                string msg = "Invalid property name: " + propertyName;
-                if (ThrowOnInvalidPropertyName)
-                    throw new Exception(msg);
-                else
-                    Debug.Fail(msg);
-            }
+            if (EqualityComparer<T>.Default.Equals(field, value))
+                return false;
+
+            OnChanging?.Invoke();
+
+            field = value;
+            OnPropertyChanged(propertyName);
+
+            OnChanged?.Invoke();
+
+            return true;
         }
     }
 }

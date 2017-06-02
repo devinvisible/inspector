@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace inspector
+namespace Inspector
 {    
     public partial class MainWindow : Window
     {
