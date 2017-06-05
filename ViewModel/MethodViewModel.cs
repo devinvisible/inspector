@@ -16,6 +16,6 @@ namespace Inspector.ViewModel
             _method = method;
         }
 
-        public string Name => _method.FullName;
+        public string FullName => _method.FullName;
     }
 }

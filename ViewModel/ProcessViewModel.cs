@@ -1,10 +1,10 @@
 ﻿using dnlib.DotNet;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
-using System.Reflection;
+using System.Windows.Data;
 
 namespace Inspector.ViewModel
 {
@@ -12,12 +12,16 @@ namespace Inspector.ViewModel
     {
         private Process _process;
         public ObservableCollection<ModuleViewModel> Modules { get; }
+        public ICollectionView ModulesCV { get; }
+        public int TotalModules { get; set; }
 
         public ProcessViewModel(Process process)
         {
             _process = process;
             
             Modules = new ObservableCollection<ModuleViewModel>();
+            ModulesCV = CollectionViewSource.GetDefaultView(Modules);
+            (ModulesCV as ListCollectionView).CustomSort = Comparer<ModuleViewModel>.Create((a, b) => { return a.FullName.CompareTo(b.FullName); });
         }
 
         public int Id => _process.Id;
@@ -46,6 +50,7 @@ namespace Inspector.ViewModel
         {
             if (Modules.Count == 0)
             {
+                TotalModules = 0;
                 foreach (ProcessModule m in _process.Modules)
                 {
                     try
@@ -54,9 +59,12 @@ namespace Inspector.ViewModel
                         Modules.Add(new ModuleViewModel(module));
                     }
                     catch (BadImageFormatException) { }
+                    
+                    TotalModules++;
                 }
             }
             base.OnPropertyChanged(nameof(Modules));
+            base.OnPropertyChanged(nameof(TotalModules));
         }
     }
 }

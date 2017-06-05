@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using dnlib.DotNet;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Windows.Data;
 
 namespace Inspector.ViewModel
 {
@@ -12,6 +14,7 @@ namespace Inspector.ViewModel
     {
         private TypeDef _type;
         public ObservableCollection<MethodViewModel> Methods { get; }
+        public ICollectionView MethodsCV { get; }
 
         public TypeViewModel(TypeDef type)
         {
@@ -22,6 +25,9 @@ namespace Inspector.ViewModel
             {
                 Methods.Add(new MethodViewModel(method));
             }
+
+            MethodsCV = CollectionViewSource.GetDefaultView(Methods);
+            (MethodsCV as ListCollectionView).CustomSort = Comparer<MethodViewModel>.Create((a, b) => { return a.FullName.CompareTo(b.FullName); });
         }
 
         public String FullName => _type.FullName;

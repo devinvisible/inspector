@@ -4,14 +4,23 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
-        mc:Ignorable="d" Height="300" Width="600" Title="Inspector" WindowStartupLocation="CenterScreen">
+        xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+        mc:Ignorable="d" Height="600" Width="1000" Title="Inspector" WindowStartupLocation="CenterScreen">
 
-    <DockPanel Margin="5">
-        <DockPanel DockPanel.Dock="Top">
+    <Window.Resources>
+        <CollectionViewSource Source="{Binding Processes}" x:Key="SortedProcesses">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="Name"/>
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+    </Window.Resources>
+
+    <DockPanel>
+        <DockPanel DockPanel.Dock="Top" Margin="5">
             <TextBlock Text="Process" DockPanel.Dock="Left" />
             <Button Content="Inspect" DockPanel.Dock="Right" Padding="5,0" Command="{Binding InspectProcessCommand}"/>
-            <ComboBox Name="cbProcesses" ItemsSource="{Binding Processes}" SelectedItem="{Binding SelectedProcess, Mode=TwoWay}"
-                      Margin="5,0" IsReadOnly="True" HorizontalContentAlignment="Stretch">
+            <ComboBox Name="cbProcesses" ItemsSource="{Binding ProcessesCV}" SelectedItem="{Binding SelectedProcess, Mode=TwoWay}"
+                        Margin="5,0" IsReadOnly="True" HorizontalContentAlignment="Stretch">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
                         <DockPanel>
@@ -22,35 +31,81 @@
                 </ComboBox.ItemTemplate>
             </ComboBox>
         </DockPanel>
-        <DockPanel>
-            <TreeView Name="trvModules" Margin="0,5,0,0" ItemsSource="{Binding SelectedProcess.Modules}">
+
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBar.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="100" />
+                        </Grid.ColumnDefinitions>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </StatusBar.ItemsPanel>
+            <StatusBarItem>
+                <TextBlock Text="test" />
+            </StatusBarItem>
+            <Separator Grid.Column="1" />
+            <StatusBarItem Grid.Column="2">
+                <TextBlock Text="test" />
+            </StatusBarItem>
+            <Separator Grid.Column="3" />
+            <StatusBarItem Grid.Column="4">
+                <ProgressBar Value="{Binding CurrentProgress, Mode=OneWay}" Maximum="{Binding MaxProgress, Mode=OneWay}" Width="90" Height="16" />
+            </StatusBarItem>
+        </StatusBar>
+        
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="300"/>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <TreeView ItemsSource="{Binding SelectedProcess.ModulesCV}">
 
                 <!-- Modules -->
                 <TreeView.ItemTemplate>
-                    <HierarchicalDataTemplate ItemsSource="{Binding Types}">
+                    <HierarchicalDataTemplate ItemsSource="{Binding TypesCV}">
                         <TextBlock Text="{Binding FullName}" />
 
                         <!-- Types -->
                         <HierarchicalDataTemplate.ItemTemplate>
-                            <HierarchicalDataTemplate ItemsSource="{Binding Methods}">
+                            <HierarchicalDataTemplate ItemsSource="{Binding MethodsCV}">
                                 <TextBlock Text="{Binding FullName}"/>
 
                                 <!-- Methods -->
                                 <HierarchicalDataTemplate.ItemTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding Name}"/>
+                                        <TextBlock Text="{Binding FullName}"/>
                                     </DataTemplate>
                                 </HierarchicalDataTemplate.ItemTemplate>
-                                
+
                             </HierarchicalDataTemplate>
                         </HierarchicalDataTemplate.ItemTemplate>
-                        
+
                     </HierarchicalDataTemplate>
                 </TreeView.ItemTemplate>
 
             </TreeView>
-            <TextBlock Text="PlaceHolder"/>
-        </DockPanel>
 
+            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
+
+            <StackPanel Grid.Column="2" Margin="5">
+                <WrapPanel>
+                    <TextBlock Text="Total Modules: "/>
+                    <TextBlock Text="{Binding SelectedProcess.TotalModules}"/>
+                </WrapPanel>
+                <WrapPanel>
+                    <TextBlock Text="Managed Modules: "/>
+                    <TextBlock Text="{Binding SelectedProcess.Modules.Count}"/>
+                </WrapPanel>
+            </StackPanel>
+        </Grid>
+        
     </DockPanel>
 </Window>
