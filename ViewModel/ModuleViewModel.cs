@@ -10,7 +10,7 @@ using System.ComponentModel;
 
 namespace Inspector.ViewModel
 {
-    class ModuleViewModel : ViewModelBase
+    class ModuleViewModel : ObservableObject
     {
         private ModuleDefMD _module;
         public ObservableCollection<TypeViewModel> Types { get; }

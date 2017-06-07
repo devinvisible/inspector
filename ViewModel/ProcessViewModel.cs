@@ -8,7 +8,7 @@ using System.Windows.Data;
 
 namespace Inspector.ViewModel
 {
-    class ProcessViewModel : ViewModelBase
+    class ProcessViewModel : ObservableObject
     {
         private Process _process;
         public ObservableCollection<ModuleViewModel> Modules { get; }

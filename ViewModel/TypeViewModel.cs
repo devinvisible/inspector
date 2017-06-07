@@ -10,7 +10,7 @@ using System.Windows.Data;
 
 namespace Inspector.ViewModel
 {
-    class TypeViewModel : ViewModelBase
+    class TypeViewModel : ObservableObject
     {
         private TypeDef _type;
         public ObservableCollection<MethodViewModel> Methods { get; }

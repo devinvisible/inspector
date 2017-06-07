@@ -7,7 +7,7 @@ using dnlib.DotNet;
 
 namespace Inspector.ViewModel
 {
-    class MethodViewModel : ViewModelBase
+    class MethodViewModel : ObservableObject
     {
         private MethodDef _method;
 

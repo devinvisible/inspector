@@ -8,7 +8,7 @@ using System.Windows.Input;
 
 namespace Inspector.ViewModel
 {
-    class MainWindowViewModel : ViewModelBase
+    class MainWindowViewModel : ObservableObject
     {
         public ObservableCollection<ProcessViewModel> Processes { get; }
         public ICollectionView ProcessesCV { get; }

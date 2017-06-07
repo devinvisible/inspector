@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 
 namespace Inspector.ViewModel
 {
-    abstract class ViewModelBase : INotifyPropertyChanged
+    abstract class ObservableObject : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName]string propertyName = null)
