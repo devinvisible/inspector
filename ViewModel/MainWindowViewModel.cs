@@ -12,34 +12,26 @@ namespace Inspector.ViewModel
     {
         public ObservableCollection<ProcessViewModel> Processes { get; }
         public ICollectionView ProcessesCV { get; }
-        public ProcessViewModel SelectedProcess { get; set; }
+
+        private ProcessViewModel _selectedProcess;
+        public ProcessViewModel SelectedProcess
+        {
+            get { return _selectedProcess; }
+            private set { SetValue(ref _selectedProcess, value); }
+        }
 
         private int _currentProgress;
         public int CurrentProgress
         {
             get { return _currentProgress; }
-            private set
-            {
-                if (_currentProgress != value)
-                {
-                    _currentProgress = value;
-                    base.OnPropertyChanged(nameof(CurrentProgress));
-                }
-            }
+            private set { SetValue(ref _currentProgress, value); }
         }
 
         private int _maxProgress;
         public int MaxProgress
         {
             get { return _maxProgress; }
-            private set
-            {
-                if (_maxProgress != value)
-                {
-                    _maxProgress = value;
-                    base.OnPropertyChanged(nameof(MaxProgress));
-                }
-            }
+            private set { SetValue(ref _maxProgress, value); }
         }
 
         public ICommand InspectProcessCommand { get; }
@@ -99,7 +91,6 @@ namespace Inspector.ViewModel
                     break;
                 }
             }
-            base.OnPropertyChanged(nameof(SelectedProcess));
         }
         
         public void InspectProcess()
