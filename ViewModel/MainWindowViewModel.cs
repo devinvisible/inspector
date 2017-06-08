@@ -19,7 +19,7 @@ namespace Inspector.ViewModel
         public ProcessViewModel SelectedProcess
         {
             get { return _selectedProcess; }
-            private set { SetValue(ref _selectedProcess, value); }
+            set { SetValue(ref _selectedProcess, value); }
         }
 
         private int _currentProgress;
