@@ -55,7 +55,7 @@
             </StatusBarItem>
             <Separator Grid.Column="3" />
             <StatusBarItem Grid.Column="4">
-                <ProgressBar Value="{Binding CurrentProgress, Mode=OneWay}" Maximum="{Binding MaxProgress, Mode=OneWay}" Width="90" Height="16" />
+                <ProgressBar Value="{Binding CurrentProgress, Mode=OneWay}" Width="90" Height="16" />
             </StatusBarItem>
         </StatusBar>
         

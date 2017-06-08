@@ -27,13 +27,6 @@ namespace Inspector.ViewModel
             private set { SetValue(ref _currentProgress, value); }
         }
 
-        private int _maxProgress;
-        public int MaxProgress
-        {
-            get { return _maxProgress; }
-            private set { SetValue(ref _maxProgress, value); }
-        }
-
         public ICommand InspectProcessCommand { get; }
 
         public MainWindowViewModel()
