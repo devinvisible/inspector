@@ -1,8 +1,10 @@
 ﻿using Inspector.Commands;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
 
@@ -41,19 +43,21 @@ namespace Inspector.ViewModel
             //SelectOurProcess();
         }
 
-        private void UpdateProcessList()
+        private Task UpdateProcessList()
         {
             Processes.Clear();
 
-            var worker = new BackgroundWorker();
-            worker.DoWork += delegate (object sender, DoWorkEventArgs e)
+            var progressHandler = new Progress<int>(value =>
             {
-                
-                var processes = Process.GetProcesses();
-                _maxProgress = processes.Length;
+                CurrentProgress = value;
+            });
+            var progress = progressHandler as IProgress<int>;
 
-                int progress = 0;
-                (sender as BackgroundWorker).ReportProgress(progress);
+            return Task.Run(() =>
+            {
+                var processes = Process.GetProcesses();
+                int total = processes.Length;
+                int current = 0;
 
                 foreach (Process p in processes)
                 {
@@ -61,16 +65,10 @@ namespace Inspector.ViewModel
                     if (process.IsManaged) // contains mscoree.dll
                         App.Current.Dispatcher.Invoke(() => Processes.Add(process));
 
-                    (sender as BackgroundWorker).ReportProgress(++progress);
+                    progress?.Report(current * 100 / total);
+                    current++;
                 }
-                base.OnPropertyChanged(nameof(Processes));
-            };
-            worker.ProgressChanged += delegate (object sender, ProgressChangedEventArgs e)
-            {
-                CurrentProgress = e.ProgressPercentage;
-            };
-            worker.WorkerReportsProgress = true;
-            worker.RunWorkerAsync();
+            });
         }
 
         private void SelectOurProcess()
