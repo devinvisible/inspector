@@ -13,7 +13,6 @@ namespace Inspector.ViewModel
     class MainWindowViewModel : ObservableObject
     {
         public ObservableCollection<ProcessViewModel> Processes { get; }
-        public ICollectionView ProcessesCV { get; }
 
         private ProcessViewModel _selectedProcess;
         public ProcessViewModel SelectedProcess
@@ -34,8 +33,9 @@ namespace Inspector.ViewModel
         public MainWindowViewModel()
         {
             Processes = new ObservableCollection<ProcessViewModel>();
-            ProcessesCV = CollectionViewSource.GetDefaultView(Processes);
-            (ProcessesCV as ListCollectionView).CustomSort = Comparer<ProcessViewModel>.Create((a, b) => { return a.Name.CompareTo(b.Name); });
+
+            var view = CollectionViewSource.GetDefaultView(Processes);
+            (view as ListCollectionView).CustomSort = Comparer<ProcessViewModel>.Create((a, b) => { return a.Name.CompareTo(b.Name); });
 
             InspectProcessCommand = new RelayCommand(_ => InspectProcess(), _ => CanInspectProcess());
 

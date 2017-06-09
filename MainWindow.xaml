@@ -3,23 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
-        xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         mc:Ignorable="d" Height="600" Width="1000" Title="Inspector" WindowStartupLocation="CenterScreen">
-
-    <Window.Resources>
-        <CollectionViewSource Source="{Binding Processes}" x:Key="SortedProcesses">
-            <CollectionViewSource.SortDescriptions>
-                <scm:SortDescription PropertyName="Name"/>
-            </CollectionViewSource.SortDescriptions>
-        </CollectionViewSource>
-    </Window.Resources>
 
     <DockPanel>
         <DockPanel DockPanel.Dock="Top" Margin="5">
             <TextBlock Text="Process" DockPanel.Dock="Left" />
             <Button Content="Inspect" DockPanel.Dock="Right" Padding="5,0" Command="{Binding InspectProcessCommand}"/>
-            <ComboBox Name="cbProcesses" ItemsSource="{Binding ProcessesCV}" SelectedItem="{Binding SelectedProcess, Mode=TwoWay}"
+            <ComboBox Name="cbProcesses" ItemsSource="{Binding Processes}" SelectedItem="{Binding SelectedProcess, Mode=TwoWay}"
                         Margin="5,0" IsReadOnly="True" HorizontalContentAlignment="Stretch">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
