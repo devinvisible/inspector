@@ -8,6 +8,18 @@ using System.Windows.Data;
 
 namespace Inspector.ViewModel
 {
+    public enum HouseType
+    {
+        Cabin,
+        Shack,
+        Mansion
+    }
+
+    interface foo
+    {
+        Object thing { get; }
+    }
+
     class ProcessViewModel : ObservableObject
     {
         private Process _process;
@@ -33,7 +45,8 @@ namespace Inspector.ViewModel
             {
                 try
                 {
-                    foreach (ProcessModule module in _process.Modules)
+                    var modules = _process.Modules;
+                    foreach (ProcessModule module in modules)
                     {
                         if (module.ModuleName.ToLower() == "mscoree.dll")
                             return true;

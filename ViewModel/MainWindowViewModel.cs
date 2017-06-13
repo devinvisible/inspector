@@ -1,9 +1,12 @@
 ﻿using Inspector.Commands;
+using Inspector.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -40,35 +43,45 @@ namespace Inspector.ViewModel
             InspectProcessCommand = new RelayCommand(_ => InspectProcess(), _ => CanInspectProcess());
 
             UpdateProcessList();
-            //SelectOurProcess();
+            SelectOurProcess();
         }
 
-        private Task UpdateProcessList()
+        private async Task UpdateProcessList()
         {
+            var processes = await ProcessRetriever.GetProcesses();
+            var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
+
+            int current = 0;
+            int total = processes.Length;
             Processes.Clear();
-
-            var progressHandler = new Progress<int>(value =>
+            var tasks = new List<Task>();
+            foreach (Process p in processes)
             {
-                CurrentProgress = value;
-            });
-            var progress = progressHandler as IProgress<int>;
-
-            return Task.Run(() =>
-            {
-                var processes = Process.GetProcesses();
-                int total = processes.Length;
-                int current = 0;
-
-                foreach (Process p in processes)
+                tasks.Add(Task.Run(() =>
                 {
                     var process = new ProcessViewModel(p);
                     if (process.IsManaged) // contains mscoree.dll
-                        App.Current.Dispatcher.Invoke(() => Processes.Add(process));
+                        RunOnScheduler(() => Processes.Add(process), scheduler);
 
-                    progress?.Report(current * 100 / total);
-                    current++;
+                    CurrentProgress = (Interlocked.Increment(ref current) * 100 / total);
                 }
-            });
+                ));
+            }
+            await Task.WhenAll(tasks);
+        }
+
+        //private async Task UpdateProcessList()
+        //{
+        //    var processes = await ProcessRetriever.GetProcesses();
+        //    Processes.Clear();
+        //    //var list = processes.AsParallel().Select(x => new ProcessViewModel(x)).Where(x => x.IsManaged);
+        //    var list = await Task.Run(() => processes.AsParallel().Select(x => new ProcessViewModel(x)).Where(x => x.IsManaged).ToList());
+        //    foreach (var item in list) Processes.Add(item);
+        //}
+
+        private void RunOnScheduler(Action action, TaskScheduler scheduler)
+        {
+            Task.Factory.StartNew(action, CancellationToken.None, TaskCreationOptions.None, scheduler).Wait();
         }
 
         private void SelectOurProcess()
